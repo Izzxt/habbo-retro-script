@@ -51,9 +51,11 @@ cms_selection(){
   if [ "$choice" = "1" ]; then
     configure_webs
     cosmic
+    summary
   elif [ "$choice" = "2" ]; then
     configure_webs
     instinct
+    summary
   fi
 }
 
@@ -152,6 +154,9 @@ server {
 }
 EOF
   fi
+
+  # Create link to sites-enabled
+  sudo ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
 
   # Restart Nginx service
   sudo systemctl restart nginx
@@ -271,6 +276,21 @@ password_input(){
       printf '*'
     fi
   done
+}
+
+summary(){
+  output "********************************************************"
+  output "Installation Completed.."
+  output "********************************************************"
+  output "MySQL Database : $MYSQL_DB"
+  output "MySQL Username : $MYSQL_USER"
+  output "MySQL Password : $MYSQL_PASSWORD"
+  output "Website Domain : $DOMAIN"
+  output "********************************************************"
+  output "Thanks for installing Cosmic"
+  output "Link to Cosmic github :"
+  output "https://git.krews.org/Raizer/Cosmic"
+  output "Credits to Raizer"
 }
 
 main
