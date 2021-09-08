@@ -1,4 +1,8 @@
-!#/bin/bash
+#!/bin/bash
+
+output(){
+    echo -e '* '$1'';
+}
 
 option_cms(){
   output "There is only 2 CMS available."
@@ -9,10 +13,10 @@ option_cms(){
   read -r cms_opts
 
   case cms_opts in
-    1 ) _cms_opts=1
+    1 ) choice=1
       output "You have choose to install Cosmic CMS"
       ;;
-    2 ) _cms_opts=2
+    2 ) choice=2
       output "You have choose to install Instinct CMS"
       ;;
     * ) error "Invalid Input"
@@ -21,9 +25,12 @@ option_cms(){
 }
 
 cms_selection(){
-  if [ "$_cms_opts" = "1" ]; then
+  if [ "$choice" = "1" ]; then
     output "1"
-  elif [ "$_cms_opts" = "2" ]; then
+  elif [ "$choice" = "2" ]; then
     output "2"
   fi
 }
+
+option_cms
+cms_selection
