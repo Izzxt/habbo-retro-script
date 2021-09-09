@@ -20,6 +20,11 @@ DB_Password=''
 EMU_LINK=https://git.krews.org/morningstar/Arcturus-Community/uploads/de3d8c4685a302f34ee73acad3b5b381/3-0-0-stable.rar
 
 main(){
+  if [[ $EUID -ne 0 ]]; then
+    echo "* This script must be executed with root privileges (sudo)." 1>&2
+    exit 1
+  fi
+
   output "********************************************************"
   output "Setting up Arcturus Emulator"
   output "********************************************************"
