@@ -70,19 +70,27 @@ cosmic(){
   [ -z "$DOMAIN_INPUT" ] && DOMAIN="cosmic.local" || DOMAIN=$DOMAIN_INPUT
 
   cosmic_dep
-  webs_configure
 
   # Clone into cosmic
   if ! [ -d "/var/www" ]; then
     mkdir /var/www
   fi
-# cd /var/www/
-# git clone https://git.krews.org/Raizer/Cosmic.git
-# sudo chown -R $USER /var/www/Cosmic
-# cd Cosmic
-# sudo composer install
-# git clone https://git.krews.org/Raizer/cosmic-assets.git
-# setup_database
+
+  cd /var/www/
+
+  git clone https://git.krews.org/Raizer/Cosmic.git
+
+  sudo chown -R $USER /var/www/Cosmic
+
+  cd Cosmic
+
+  sudo composer install
+
+  git clone https://git.krews.org/Raizer/cosmic-assets.git
+
+  setup_database
+
+  webs_configure
 
 }
 
@@ -92,8 +100,10 @@ apt_update(){
 
 webs_configure(){
   if [ "$webs_choice" = "1" ]; then
+    sudo apt-get -y install nginx
     configure_nginx
   elif [ "$webs_choice" = "2" ]; then
+    sudo apt-get -y install apache2
     confiure_apache
   fi
 }
@@ -216,13 +226,6 @@ cosmic_dep(){
 
   # Install Git
   sudo apt-get install git
-
-  # Install Web Server
-  if [ "$webs_choice" = "1" ]; then
-    sudo apt-get -y install nginx
-  elif [ "$webs_choice" = "2" ]; then
-    sudo apt-get -y install apache2
-  fi
 
   # Install MariaDB
   sudo apt-get install mariadb-server
