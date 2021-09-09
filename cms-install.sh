@@ -211,13 +211,13 @@ cosmic_dep(){
   sudo apt-get install -y nodejs
 
   # Install PHP and its useful modules
-  sudo apt install software-properties-common
+  sudo apt install -y software-properties-common
 
   sudo add-apt-repository ppa:ondrej/php
 
   sudo add-apt-repository ppa:ondrej/nginx
 
-  sudo apt update
+  sudo apt update -y
 
   sudo apt install -y php7.4
 
@@ -236,13 +236,13 @@ cosmic_dep(){
   sudo apt-get -y install php7.4-mysql
 
   # Install Composer
-  sudo apt-get install composer
+  sudo apt-get -y install composer
 
   # Install Git
-  sudo apt-get install git
+  sudo apt-get -y install git
 
   # Install MariaDB
-  sudo apt-get install mariadb-server
+  sudo apt-get -y install mariadb-server
 
   sudo systemctl enable mariadb
   sudo systemctl start mariadb
