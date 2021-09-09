@@ -51,7 +51,7 @@ main(){
   output "********************************************************"
   output "to run the emulator follow the step below :"
   output "[1] screen -S emu"
-  output "[2] cd ~/3-0-0-stable"
+  output "[2] cd ./3-0-0-stable"
   output "[3] ./run.sh"
   noted "[-] Ctrl + a d (to deattach screen)"
   noted "[-] screen -r emu (to reattach screen)"
@@ -73,47 +73,48 @@ emu_setup(){
   sudo apt-get install wget
 
   # Install arcturus emulator with wget
-  cd ~/
+  cd ./
   wget $EMU_LINK 
 
-  mkdir ~/3-0-0-stable
+  mkdir ./3-0-0-stable
   # Extract emulator file 
-  unrar e ~/3-0-0-stable.rar ~/3-0-0-stable/
+  unrar e ./3-0-0-stable.rar ./3-0-0-stable/
 
   # Remove emulator rar
-  rm -rf ~/3-0-0-stable.rar
+  rm -rf ./3-0-0-stable.rar
   
   # Replace database inside config.ini
-  sed -i -e "s/db.database=arcturus/db.database=${DB_Database}/g" ~/3-0-0-stable/config.ini
+  sed -i -e "s/db.database=arcturus/db.database=${DB_Database}/g" ./3-0-0-stable/config.ini
 
   # Replace database inside config.ini
-  sed -i -e "s/db.username=root/db.username=${DB_User}/g" ~/3-0-0-stable/config.ini
+  sed -i -e "s/db.username=root/db.username=${DB_User}/g" ./3-0-0-stable/config.ini
 
   # Replace database inside config.ini
-  sed -i -e "s/db.password=password/db.password=${DB_Password}/g" ~/3-0-0-stable/config.ini
+  sed -i -e "s/db.password=password/db.password=${DB_Password}/g" ./3-0-0-stable/config.ini
 
   # Execute sql file
-  mysql -u root -p ${DB_Database} < ~/3-0-0-stable/arcturus_3.0.0-stable_base_database.sql
+  output "Execute arcturus base database"
+  mysql -u root -p ${DB_Database} < ./3-0-0-stable/arcturus_3.0.0-stable_base_database.sql
   
-  mysql -u root -p "ALTER TABLE ${DB_Database}.users ADD secret_key varchar(40) NULL DEFAULT NULL;"
-  mysql -u root -p "ALTER TABLE ${DB_Database}.users ADD pincode varchar(11) NULL DEFAULT NULL;"
-  mysql -u root -p "ALTER TABLE ${DB_Database}.users ADD extra_rank int(2) NULL DEFAULT NULL;"
-  mysql -u root -p "ALTER TABLE ${DB_Database}.users ADD template enum('light','dark') NULL DEFAULT 'light';"
-  mysql -u root -p "ALTER TABLE ${DB_Database}.bans MODIFY COLUMN machine_id varchar(255)NOT NULL DEFAULT '';"
-  mysql -u root -p "SET FOREIGN_KEY_CHECKS = 1;"
+  output "Enter until finish"
+  mysql -u root -p ${DB_Database} -e "ALTER TABLE .users ADD secret_key varchar(40) NULL DEFAULT NULL;"
+  mysql -u root -p ${DB_Database} -e "ALTER TABLE users ADD pincode varchar(11) NULL DEFAULT NULL;"
+  mysql -u root -p ${DB_Database} -e "ALTER TABLE users ADD extra_rank int(2) NULL DEFAULT NULL;"
+  mysql -u root -p ${DB_Database} -e "ALTER TABLE bans MODIFY COLUMN machine_id varchar(255)NOT NULL DEFAULT '';"
+  mysql -u root -p ${DB_Database} -e "SET FOREIGN_KEY_CHECKS = 1;"
 
 
   # Create new run.sh file
-bash -c "cat > ~/3-0-0-stable/run.sh" << EOF
+bash -c "cat > ./3-0-0-stable/run.sh" << EOF
 #!/bin/bash
 
-cd ~/3-0-0-stable
+cd ./3-0-0-stable
 java -jar Habbo-3.0.0-jar-with-dependencies.jar
 pause
 EOF
 
 # Give execute permissions
-chmod +x ~/3-0-0-stable/run.sh
+chmod +x ./3-0-0-stable/run.sh
 }
 
 main
