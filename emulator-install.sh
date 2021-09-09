@@ -64,13 +64,13 @@ main(){
 
 emu_setup(){
   # Install screen
-  sudo apt-get install screen
+  sudo apt-get -y install screen
   
   # Install Unrar packages
-  sudo apt-get install unrar
+  sudo apt-get -y install unrar
 
   # Install wget
-  sudo apt-get install wget
+  sudo apt-get -y install wget
 
   # Install arcturus emulator with wget
   wget $EMU_LINK 
@@ -80,23 +80,23 @@ emu_setup(){
   mkdir 3-0-0-stable
 
   # Extract emulator file 
-  unrar e ./3-0-0-stable.rar ./3-0-0-stable/
+  unrar e ./nitro/3-0-0-stable.rar ./3-0-0-stable/
 
   # Remove emulator rar
-  rm -rf ./3-0-0-stable.rar
+  rm -rf ./nitro/3-0-0-stable.rar
   
   # Replace database inside config.ini
-  sed -i -e "s/db.database=arcturus/db.database=${DB_Database}/g" ./3-0-0-stable/config.ini
+  sed -i -e "s/db.database=arcturus/db.database=${DB_Database}/g" ./nitro/3-0-0-stable/config.ini
 
   # Replace database inside config.ini
-  sed -i -e "s/db.username=root/db.username=${DB_User}/g" ./3-0-0-stable/config.ini
+  sed -i -e "s/db.username=root/db.username=${DB_User}/g" ./nitro/3-0-0-stable/config.ini
 
   # Replace database inside config.ini
-  sed -i -e "s/db.password=password/db.password=${DB_Password}/g" ./3-0-0-stable/config.ini
+  sed -i -e "s/db.password=password/db.password=${DB_Password}/g" ./nitro/3-0-0-stable/config.ini
 
   # Execute sql file
   output "Execute arcturus base database"
-  mysql -u root -p ${DB_Database} < ./3-0-0-stable/arcturus_3.0.0-stable_base_database.sql
+  mysql -u root -p ${DB_Database} < ./nitro/3-0-0-stable/arcturus_3.0.0-stable_base_database.sql
   
   output "Enter until finish"
   mysql -u root -p ${DB_Database} -e "ALTER TABLE .users ADD secret_key varchar(40) NULL DEFAULT NULL;"
@@ -108,15 +108,15 @@ emu_setup(){
 
 
   # Create new run.sh file
-bash -c "cat > ./3-0-0-stable/run.sh" << EOF
+bash -c "cat > ./nitro/3-0-0-stable/run.sh" << EOF
 #!/bin/bash
 
 java -jar Habbo-3.0.0-jar-with-dependencies.jar
 EOF
 
 # Give execute permissions
-chmod +x ./3-0-0-stable/run.sh
-chown -R $USER:$USER ./3-0-0-stable
+chmod +x ./nitro/3-0-0-stable/run.sh
+chown -R $USER:$USER ./nitro/3-0-0-stable
 }
 
 main
