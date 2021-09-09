@@ -80,7 +80,7 @@ cosmic(){
 
   git clone https://git.krews.org/Raizer/Cosmic.git
 
-  sudo chown -R $USER /var/www/Cosmic
+  sudo chown -R $USER:www-data /var/www/Cosmic
 
   cd Cosmic
 
@@ -129,10 +129,17 @@ server {
      server_name ${DOMAIN};
 
      root /var/www/Cosmic/public;
-     index index.html index.php;
+     index index.php index.html;
+
+     add_header Access-Control-Allow-Origin *;
 
      location / {
         try_files \$uri \$uri/ /index.php?\$query_string;
+     }
+
+     location ~ \.php$ {
+         include snippets/fastcgi-php.conf;
+         fastcgi_pass unix:/run/php/php7.4-fpm.sock;
      }
 }
 EOF
@@ -147,10 +154,17 @@ server {
      server_name ${DOMAIN};
 
      root /var/www/Cosmic/public;
-     index index.html index.php;
+     index index.php index.html;
+
+     add_header Access-Control-Allow-Origin *;
 
      location / {
         try_files \$uri \$uri/ /index.php?\$query_string;
+     }
+
+     location ~ \.php$ {
+         include snippets/fastcgi-php.conf;
+         fastcgi_pass unix:/run/php/php7.4-fpm.sock;
      }
 }
 EOF
@@ -232,6 +246,8 @@ cosmic_dep(){
 
   sudo systemctl enable mariadb
   sudo systemctl start mariadb
+
+  sudo systemctl stop apache2
 }
 
 configure_webs(){
@@ -282,18 +298,19 @@ setup_database(){
   mysql -u root -p ${MYSQL_DB} < /var/www/Cosmic/cosmic-assets/Database/rarevalue.sql 
 
   echo "Database Created & Configured!"
-}
 
 # Setup .env file
 bash -c 'cat > /var/www/Cosmic/.env' << EOF
 DB_DRIVER=mysql
-DB_HOST=localhost
+DB_HOST=127.0.0.1
 DB_NAME=${MYSQL_DB}
 DB_USER=${MYSQL_USER}
 DB_PASS=${MYSQL_PASSWORD}
 DB_CHARSET=utf8
 DB_COLLATION=collation
 EOF
+}
+
 
 password_input(){
   # Copy Paste from https://stackoverflow.com/a/22940001 i'm lazy
