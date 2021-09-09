@@ -51,60 +51,34 @@ install() {
     * ) error "Invalid Input"
         install
     esac
+    selection_option
 }
 
 selection_option(){
   if [ "$option" = "1" ]; then
     cms
   elif [ "$option" = "2" ]; then
-    output "2"
+    nitro
   elif [ "$option" = "3" ]; then
-    output "3"
+    emulator
   elif [ "$option" = "4" ]; then
-    output "4"
+    emulator
+    cms
+    nitro
   fi
 }
 
 cms(){
-   bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/cms-install.sh)
+  bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/cms-install.sh)
 }
 
 nitro(){
-   bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/nitro-install.sh)
+  bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/nitro-install.sh)
 }
 
 emulator(){
-   bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/emulator-install.sh)
-}
-
-option_cms(){
-  output "There is only 2 CMS available."
-  output "Please choose your CMS:"
-  output "[1] Cosmic CMS"
-  output "[2] Instinct CMS"
-  echo -en '* \e[36m'Input [ 1 or 2 ]'\e[0m : '
-  read -r cms_opts
-
-  case cms_opts in
-    1 ) _cms_opts=1
-      output "You have choose to install Cosmic CMS"
-      ;;
-    2 ) _cms_opts=2
-      output "You have choose to install Instinct CMS"
-      ;;
-    * ) error "Invalid Input"
-      option_cms
-  esac
-}
-
-cms_selection(){
-  if [ "$_cms_opts" = "1" ]; then
-    output "1"
-  elif [ "$_cms_opts" = "2" ]; then
-    output "2"
-  fi
+  bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/emulator-install.sh)
 }
 
 # Excutions
 install
-selection_option
