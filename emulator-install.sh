@@ -73,10 +73,12 @@ emu_setup(){
   sudo apt-get install wget
 
   # Install arcturus emulator with wget
-  cd ./
   wget $EMU_LINK 
 
-  mkdir ./3-0-0-stable
+  mkdir nitro
+  cd nitro
+  mkdir 3-0-0-stable
+
   # Extract emulator file 
   unrar e ./3-0-0-stable.rar ./3-0-0-stable/
 
@@ -101,6 +103,7 @@ emu_setup(){
   mysql -u root -p ${DB_Database} -e "ALTER TABLE users ADD pincode varchar(11) NULL DEFAULT NULL;"
   mysql -u root -p ${DB_Database} -e "ALTER TABLE users ADD extra_rank int(2) NULL DEFAULT NULL;"
   mysql -u root -p ${DB_Database} -e "ALTER TABLE bans MODIFY COLUMN machine_id varchar(255)NOT NULL DEFAULT '';"
+  mysql -u root -p ${DB_Database} -e "ALTER TABLE users ADD template enum('light','dark') NULL DEFAULT 'light';"
   mysql -u root -p ${DB_Database} -e "SET FOREIGN_KEY_CHECKS = 1;"
 
 
@@ -108,13 +111,12 @@ emu_setup(){
 bash -c "cat > ./3-0-0-stable/run.sh" << EOF
 #!/bin/bash
 
-cd ./3-0-0-stable
 java -jar Habbo-3.0.0-jar-with-dependencies.jar
-pause
 EOF
 
 # Give execute permissions
 chmod +x ./3-0-0-stable/run.sh
+chown -R $USER:$USER ./3-0-0-stable
 }
 
 main
