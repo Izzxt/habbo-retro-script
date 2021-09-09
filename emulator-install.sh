@@ -60,6 +60,7 @@ main(){
   output "Thanks for installing Arcturus Emulator"
   output "Link to Cosmic github :"
   output "https://git.krews.org/morningstar/Arcturus-Community"
+  error "PLEASE REBOOT YOUR MACHINE !"
 }
 
 emu_setup(){
@@ -72,31 +73,32 @@ emu_setup(){
   # Install wget
   sudo apt-get -y install wget
 
+  # Install Java Development Kit
+  sudo apt-get -y default-jdk
+
   # Install arcturus emulator with wget
   wget $EMU_LINK 
 
-  mkdir nitro
-  cd nitro
-  mkdir 3-0-0-stable
+  mkdir ./3-0-0-stable
 
   # Extract emulator file 
-  unrar e ./nitro/3-0-0-stable.rar ./3-0-0-stable/
+  unrar e ./3-0-0-stable.rar ./3-0-0-stable/
 
   # Remove emulator rar
-  rm -rf ./nitro/3-0-0-stable.rar
+  rm -rf ./3-0-0-stable.rar
   
   # Replace database inside config.ini
-  sed -i -e "s/db.database=arcturus/db.database=${DB_Database}/g" ./nitro/3-0-0-stable/config.ini
+  sed -i -e "s/db.database=arcturus/db.database=${DB_Database}/g" ./3-0-0-stable/config.ini
 
   # Replace database inside config.ini
-  sed -i -e "s/db.username=root/db.username=${DB_User}/g" ./nitro/3-0-0-stable/config.ini
+  sed -i -e "s/db.username=root/db.username=${DB_User}/g" ./3-0-0-stable/config.ini
 
   # Replace database inside config.ini
-  sed -i -e "s/db.password=password/db.password=${DB_Password}/g" ./nitro/3-0-0-stable/config.ini
+  sed -i -e "s/db.password=password/db.password=${DB_Password}/g" ./3-0-0-stable/config.ini
 
   # Execute sql file
   output "Execute arcturus base database"
-  mysql -u root -p ${DB_Database} < ./nitro/3-0-0-stable/arcturus_3.0.0-stable_base_database.sql
+  mysql -u root -p ${DB_Database} < ./3-0-0-stable/arcturus_3.0.0-stable_base_database.sql
   
   output "Enter until finish"
   mysql -u root -p ${DB_Database} -e "ALTER TABLE .users ADD secret_key varchar(40) NULL DEFAULT NULL;"
@@ -108,15 +110,15 @@ emu_setup(){
 
 
   # Create new run.sh file
-bash -c "cat > ./nitro/3-0-0-stable/run.sh" << EOF
+bash -c "cat > ./3-0-0-stable/run.sh" << EOF
 #!/bin/bash
 
 java -jar Habbo-3.0.0-jar-with-dependencies.jar
 EOF
 
 # Give execute permissions
-chmod +x ./nitro/3-0-0-stable/run.sh
-chown -R $USER:$USER ./nitro/3-0-0-stable
+chmod +x ./3-0-0-stable/run.sh
+chown -R $USER:$USER ./3-0-0-stable
 }
 
 main
