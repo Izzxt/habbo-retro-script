@@ -74,7 +74,7 @@ emu_setup(){
   sudo apt-get -y install wget
 
   # Install Java Development Kit
-  sudo apt-get -y default-jdk
+  sudo apt-get -y install default-jdk
 
   # Install arcturus emulator with wget
   wget $EMU_LINK 
