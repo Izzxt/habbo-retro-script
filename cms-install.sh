@@ -71,26 +71,19 @@ cosmic(){
 
   cosmic_dep
   webs_configure
-  setup_database
 
   # Clone into cosmic
   if ! [ -d "/var/www" ]; then
     mkdir /var/www
   fi
-  cd /var/www/
-  git clone https://git.krews.org/Raizer/Cosmic.git
-  cd Cosmic
-  git clone https://git.krews.org/Raizer/cosmic-assets.git
+# cd /var/www/
+# git clone https://git.krews.org/Raizer/Cosmic.git
+# sudo chown -R $USER /var/www/Cosmic
+# cd Cosmic
+# sudo composer install
+# git clone https://git.krews.org/Raizer/cosmic-assets.git
+# setup_database
 
-bash -c 'cat > /var/www/Cosmic/.env' << EOF
-DB_DRIVER=mysql
-DB_HOST=localhost
-DB_NAME=${MYSQL_DB}
-DB_USER=${MYSQL_USER}
-DB_PASS=${MYSQL_PASSWORD}
-DB_CHARSET=utf8
-DB_COLLATION=collation
-EOF
 }
 
 apt_update(){
@@ -117,11 +110,11 @@ configure_nginx(){
   echo -ne "* Are you using cloudflare? (Y/N) : "
   read -r answer
 
-  if [ "$answer" =~ [Yy] ]; then
-bash -c "cat > /etc/nginx/sites-available/$DOMAIN" << EOF
+  if [[ "$answer" =~ [Yy] ]]; then
+bash -c "cat > /etc/nginx/sites-available/$DOMAIN" <<-EOF
 server {
-     listen 81;
-     listen [::]:81;
+     listen 80;
+     listen [::]:80;
 
      server_name ${DOMAIN};
 
@@ -129,19 +122,17 @@ server {
      index index.html index.php;
 
      location / {
-        try_files $uri $uri/ /index.php?$query_string;
-     }
-
-     http { 
-        include /etc/nginx/cloudflare 
+        try_files \$uri \$uri/ /index.php?\$query_string;
      }
 }
 EOF
+cloudflare
+
   else
-bash -c "cat > /etc/nginx/sites-available/$DOMAIN" << EOF
+bash -c "cat > /etc/nginx/sites-available/$DOMAIN" <<-EOF
 server {
-     listen 81;
-     listen [::]:81;
+     listen 80;
+     listen [::]:80;
 
      server_name ${DOMAIN};
 
@@ -149,10 +140,21 @@ server {
      index index.html index.php;
 
      location / {
-        try_files $uri $uri/ /index.php?$query_string;
+        try_files \$uri \$uri/ /index.php?\$query_string;
      }
 }
 EOF
+
+  # Restart Nginx service
+  sudo systemctl restart nginx
+  fi
+
+  # Register hosts
+  register_hosts
+
+  # Remove default nginx config
+  if [ -f "/etc/nginx/sites-enabled/default" ]; then
+    sudo rm /etc/nginx/sites-enabled/default
   fi
 
   # Create link to sites-enabled
@@ -169,6 +171,12 @@ confiure_apache(){
   
 }
 
+register_hosts(){
+bash -c "cat >> /etc/hosts" << EOF
+127.0.0.1         $DOMAIN
+EOF
+}
+
 cosmic_dep(){
   output "Installing Cosmic CMS dependencies.."
 
@@ -179,11 +187,29 @@ cosmic_dep(){
   sudo apt-get install -y nodejs
 
   # Install PHP and its useful modules
-  sudo apt-get -y install php-json
+  sudo apt install software-properties-common
 
-  sudo apt-get -y install php-curl
+  sudo add-apt-repository ppa:ondrej/php
 
-  sudo apt-get -y install php-mbstring
+  sudo add-apt-repository ppa:ondrej/nginx
+
+  sudo apt update
+
+  sudo apt install -y php7.4
+
+  sudo apt-get -y install php7.4-json
+
+  sudo apt-get -y install php7.4-curl
+
+  sudo apt-get -y install php7.4-mbstring
+
+  sudo apt-get -y install php7.4-gd
+
+  sudo apt-get -y install php7.4-fpm
+
+  sudo apt-get -y install php7.4-pdo
+
+  sudo apt-get -y install php7.4-mysql
 
   # Install Composer
   sudo apt-get install composer
@@ -200,9 +226,6 @@ cosmic_dep(){
 
   # Install MariaDB
   sudo apt-get install mariadb-server
-
-  # Install PHPMyAdmin
-  sudo apt-get install phpmyadmin
 
   sudo systemctl enable mariadb
   sudo systemctl start mariadb
@@ -227,7 +250,6 @@ configure_webs(){
 }
 
 setup_database(){
-  sudo mariadb-secure-installation
   output "********************************************************"
   output "MariaDB secure installation.. Setting up database..."
   output "********************************************************"
@@ -253,11 +275,22 @@ setup_database(){
   mysql -u root -p -e "FLUSH PRIVILEGES;"
 
   output "Execute database SQL"
-  mysql -u root -p < /var/www/Cosmic/Database/2.6.sql 
-  mysql -u root -p < /var/www/Cosmic/Database/rarevalue.sql 
+  mysql -u root -p ${MYSQL_DB} < /var/www/Cosmic/cosmic-assets/Database/2.6.sql 
+  mysql -u root -p ${MYSQL_DB} < /var/www/Cosmic/cosmic-assets/Database/rarevalue.sql 
 
   echo "Database Created & Configured!"
 }
+
+# Setup .env file
+bash -c 'cat > /var/www/Cosmic/.env' << EOF
+DB_DRIVER=mysql
+DB_HOST=localhost
+DB_NAME=${MYSQL_DB}
+DB_USER=${MYSQL_USER}
+DB_PASS=${MYSQL_PASSWORD}
+DB_CHARSET=utf8
+DB_COLLATION=collation
+EOF
 
 password_input(){
   # Copy Paste from https://stackoverflow.com/a/22940001 i'm lazy
@@ -276,6 +309,57 @@ password_input(){
       printf '*'
     fi
   done
+}
+
+cloudflare(){
+  # Check if folder not exist then create a new one.
+  if ! [ -d "/opt/scripts" ]; then
+    mkdir /opt/scripts
+  fi
+
+  # Create file
+  touch /opt/scripts/cloudflare-ip-whitelist-sync.sh
+
+bash -c "cat > /opt/scripts/cloudflare-ip-whitelist-sync.sh" <<-'EOF'
+#!/bin/bash
+
+CLOUDFLARE_FILE_PATH=/etc/nginx/cloudflare
+
+echo "#Cloudflare" > $CLOUDFLARE_FILE_PATH;
+echo "" >> $CLOUDFLARE_FILE_PATH;
+
+echo "# - IPv4" >> $CLOUDFLARE_FILE_PATH;
+for i in `curl https://www.cloudflare.com/ips-v4`; do
+        echo "set_real_ip_from $i;" >> $CLOUDFLARE_FILE_PATH;
+done
+
+echo "" >> $CLOUDFLARE_FILE_PATH;
+echo "# - IPv6" >> $CLOUDFLARE_FILE_PATH;
+for i in `curl https://www.cloudflare.com/ips-v6`; do
+        echo "set_real_ip_from $i;" >> $CLOUDFLARE_FILE_PATH;
+done
+
+echo "" >> $CLOUDFLARE_FILE_PATH;
+echo "real_ip_header CF-Connecting-IP;" >> $CLOUDFLARE_FILE_PATH;
+
+#test configuration and reload nginx
+nginx -t && systemctl reload nginx
+EOF
+
+  # Set permissions to execute scripts
+  sudo chmod +x /opt/scripts/cloudflare-ip-whitelist-sync.sh
+
+  # Execute scripts
+  sudo sh /opt/scripts/cloudflare-ip-whitelist-sync.sh
+
+  # Update nginx.conf
+  bash -c "cat nginx.conf > /etc/nginx/nginx.conf"
+
+  # Create cron job
+bash -c "cat >> /etc/crontab" << EOF
+30 2 * * * /opt/scripts/cloudflare-ip-whitelist-sync.sh >/dev/null 2>&1
+EOF
+  sudo systemctl restart nginx
 }
 
 summary(){
