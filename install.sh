@@ -62,8 +62,8 @@ selection_option(){
   elif [ "$option" = "3" ]; then
     emulator
   elif [ "$option" = "4" ]; then
-    emulator
     cms
+    emulator
     nitro
   fi
 }
