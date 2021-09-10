@@ -282,13 +282,13 @@ setup_database(){
   password_input
 
   output "Create MySQL user."
-  mysql -u root -p -e "CREATE USER '${MYSQL_USER}'@'127.0.0.1' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+  mysql -u root -p -e "CREATE USER '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';"
 
   output "Create database."
   mysql -u root -p -e "CREATE DATABASE ${MYSQL_DB};"
 
   output "Grant privileges."
-  mysql -u root -p -e "GRANT ALL PRIVILEGES ON ${MYSQL_DB}.* TO '${MYSQL_USER}'@'127.0.0.1' WITH GRANT OPTION;"
+  mysql -u root -p -e "GRANT ALL PRIVILEGES ON ${MYSQL_DB}.* TO '${MYSQL_USER}'@'localhost' WITH GRANT OPTION;"
 
   output "Flush privileges."
   mysql -u root -p -e "FLUSH PRIVILEGES;"
@@ -302,7 +302,7 @@ setup_database(){
 # Setup .env file
 bash -c 'cat > /var/www/Cosmic/.env' << EOF
 DB_DRIVER=mysql
-DB_HOST=127.0.0.1
+DB_HOST=localhost
 DB_NAME=${MYSQL_DB}
 DB_USER=${MYSQL_USER}
 DB_PASS=${MYSQL_PASSWORD}
