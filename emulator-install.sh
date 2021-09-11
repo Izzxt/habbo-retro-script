@@ -26,6 +26,9 @@ main(){
   fi
 
   output "********************************************************"
+  output ""
+  error "Please noted! once you run this scripts you can't revert back."
+  output "********************************************************"
   output "Setting up Arcturus Emulator"
   output "********************************************************"
 
