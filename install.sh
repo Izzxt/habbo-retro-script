@@ -65,6 +65,7 @@ selection_option(){
     cms
     emulator
     nitro
+    plugins
   fi
 }
 
@@ -78,6 +79,19 @@ nitro(){
 
 emulator(){
   bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/emulator-install.sh)
+}
+
+plugins(){
+
+  mv /var/www/Cosmic/cosmic-assets/Plugin/Webkit.jar 3-0-0-stable/plugins/
+
+  if ! [ -d "3-0-0-stable/plugins" ]; then
+    mkdir 3-0-0-stable/plugins
+  fi
+  
+  cd 3-0-0-stable/plugins
+
+  wget https://cdn.discordapp.com/attachments/641088820598538252/873759980329766942/NitroWebsockets-3.1.jar
 }
 
 # Excutions
