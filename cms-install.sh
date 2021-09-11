@@ -44,22 +44,25 @@ main(){
     * ) error "Invalid Input"
       main
   esac
-  cms_selection
+  #cms_selection
 }
 
 cms_selection(){
   if [ "$choice" = "1" ]; then
     configure_webs
     cosmic
-    summary
+    cosmic_summary
   elif [ "$choice" = "2" ]; then
     configure_webs
     instinct
-    summary
+    instinct_summary
   fi
 }
 
 cosmic(){
+  output "********************************************************"
+  output ""
+  error "Please noted! once you run this scripts you can't revert back."
   output "********************************************************"
   output "Installing Cosmic CMS..."
   output "********************************************************"
@@ -382,7 +385,7 @@ EOF
   sudo systemctl restart nginx
 }
 
-summary(){
+cosmic_summary(){
   output "********************************************************"
   output "Installation Completed.."
   output "********************************************************"
