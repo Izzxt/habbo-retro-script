@@ -87,7 +87,7 @@ cosmic(){
 
   cd Cosmic
 
-  sudo composer install
+  composer install
 
   git clone https://git.krews.org/Raizer/cosmic-assets.git
 
