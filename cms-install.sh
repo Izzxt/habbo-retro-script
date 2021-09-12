@@ -142,7 +142,7 @@ server {
 
      location ~ \.php$ {
          include snippets/fastcgi-php.conf;
-         fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+         fastcgi_pass unix:/run/php/php-fpm.sock;
      }
 }
 EOF
@@ -167,7 +167,7 @@ server {
 
      location ~ \.php$ {
          include snippets/fastcgi-php.conf;
-         fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+         fastcgi_pass unix:/run/php/php-fpm.sock;
      }
 }
 EOF
@@ -222,21 +222,21 @@ cosmic_dep(){
 
   sudo apt update -y
 
-  sudo apt install -y php7.4
+  sudo apt install -y php
 
-  sudo apt-get -y install php7.4-json
+  sudo apt-get -y install php-json
 
-  sudo apt-get -y install php7.4-curl
+  sudo apt-get -y install php-curl
 
-  sudo apt-get -y install php7.4-mbstring
+  sudo apt-get -y install php-mbstring
 
-  sudo apt-get -y install php7.4-gd
+  sudo apt-get -y install php-gd
 
-  sudo apt-get -y install php7.4-fpm
+  sudo apt-get -y install php-fpm
 
-  sudo apt-get -y install php7.4-pdo
+  sudo apt-get -y install php-pdo
 
-  sudo apt-get -y install php7.4-mysql
+  sudo apt-get -y install php-mysql
 
   # Install Composer
   sudo apt-get -y install composer
