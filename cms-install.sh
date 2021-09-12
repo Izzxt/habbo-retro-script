@@ -44,7 +44,7 @@ main(){
     * ) error "Invalid Input"
       main
   esac
-  #cms_selection
+  cms_selection
 }
 
 cms_selection(){
