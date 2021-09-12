@@ -79,8 +79,8 @@ main(){
 
   cms_config
   webserver
-  #setup_nitro
-  #update_config
+  setup_nitro
+  update_config
   summary
 }
 
