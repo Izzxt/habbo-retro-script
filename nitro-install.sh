@@ -145,9 +145,9 @@ cms_config(){
 
   if [ "$cms_opts" = "1" ]; then
     if [[ "$answer" =~ [Yy] ]]; then
-      sudo sed -i -e "s|https://client.circinus.dev|https://${DOMAIN}|g" /var/www/Cosmic/src/App/Config.php
+      sudo sed -i -e "s|https://client.circinus.dev|https://${DOMAIN}|g" /var/www/$DOMAIN/src/App/Config.php
     else
-      sudo sed -i -e "s|https://client.circinus.dev|http://${DOMAIN}|g" /var/www/Cosmic/src/App/Config.php
+      sudo sed -i -e "s|https://client.circinus.dev|http://${DOMAIN}|g" /var/www/$DOMAIN/src/App/Config.php
     fi
   elif [ "$cms_opts" = "2" ]; then
       output "instinct"
