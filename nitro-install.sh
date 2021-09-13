@@ -93,7 +93,7 @@ setup_nitro(){
   fi
 
   # Clone nitro
-  git clone https:/|git.krews.org/nitro/nitro-client.git --branch dev
+  git clone https://git.krews.org/nitro/nitro-client.git --branch dev
 
   cd nitro-client
 
@@ -111,22 +111,22 @@ setup_nitro(){
   npm run build-prod
 
   # Create Nitro directory for web server
-  mkdir /var/www/Nitro
+  mkdir /var/www/$DOMAIN
 
   # Move nitro dist folder to Nitro web server folder, and delete dist folder
-  mv dist/* /var/www/Nitro
+  mv dist/* /var/www/$DOMAIN
   rm dist
 
   # Clone into default-assets
   git clone https://git.krews.org/nitro/default-assets.git
 
-  mv default-assets/images /var/www/Nitro
+  mv default-assets/images /var/www/$DOMAIN
 
-  mv default-assets/room /var/www/Nitro
+  mv default-assets/room /var/www/$DOMAIN
 
   rm -rf default-assets
 
-  cd /var/www/Nitro
+  cd /var/www/$DOMAIN
 
   # Create bundled directory 
   mkdir bundled

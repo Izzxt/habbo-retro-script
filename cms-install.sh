@@ -86,7 +86,7 @@ cosmic(){
 
   mkdir $DOMAIN
 
-  mv Cosmic/$DOMAIN/* $DOMAIN
+  mv Cosmic/* $DOMAIN
 
   sudo chown -R $USER:www-data /var/www/$DOMAIN
 
