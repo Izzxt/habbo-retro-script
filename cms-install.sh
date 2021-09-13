@@ -382,8 +382,8 @@ EOF
   # Execute scripts
   sudo sh /opt/scripts/cloudflare-ip-whitelist-sync.sh
 
-  # Update nginx.conf
-  bash -c "cat nginx.conf > /etc/nginx/nginx.conf"
+  # Append text into nginx.conf
+  sed -i '/\/etc\/nginx\/sites-enabled\/\*/a include /etc/nginx/cloudflare;' /etc/nginx/nginx.conf
 
   # Create cron job
 bash -c "cat >> /etc/crontab" << EOF
