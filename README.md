@@ -21,11 +21,26 @@ cd habbo-retro-script
 ```
 **Cosmic Webkit plugins**
 ```sh
-cd /var/www/Cosmic/cosmic-assets/Plugin
+cd habbo-retro-script/Webkit.jar
 ```
 **Nitro Websockets plugins**
 * https://git.krews.org/nitro/ms-websockets/-/releases
 
+**Run emulator**
+```sh
+# Create new session
+screen -S <name>
+
+# Deattach from session
+CTRL + A D
+
+# Reattach session
+screen -r <name>
+
+cd habbo-retro-scripts/3-0-0-stable/
+
+./run.sh
+```
 
 # Supported CMS
 | CMS                | Supported           |
