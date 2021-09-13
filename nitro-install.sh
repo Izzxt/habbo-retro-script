@@ -117,6 +117,15 @@ setup_nitro(){
   mv dist/* /var/www/Nitro
   rm dist
 
+  # Clone into default-assets
+  git clone https://git.krews.org/nitro/default-assets.git
+
+  mv default-assets/images /var/www/Nitro
+
+  mv default-assets/room /var/www/Nitro
+
+  rm -rf default-assets
+
   cd /var/www/Nitro
 
   # Create bundled directory 
