@@ -70,20 +70,20 @@ selection_option(){
 }
 
 cms(){
-  bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/cms-install.sh)
+  bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/script/cms-install.sh)
 }
 
 nitro(){
-  bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/nitro-install.sh)
+  bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/script/nitro-install.sh)
 }
 
 emulator(){
-  bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/emulator-install.sh)
+  bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/script/emulator-install.sh)
 }
 
 plugins(){
 
-  mv /var/www/Cosmic/cosmic-assets/Plugin/Webkit.jar 3-0-0-stable/plugins/
+  mv Webkit.jar 3-0-0-stable/plugins/
 
   if ! [ -d "3-0-0-stable/plugins" ]; then
     mkdir 3-0-0-stable/plugins
