@@ -63,6 +63,7 @@ cosmic(){
   output "********************************************************"
   output ""
   error "Please noted! once you run this scripts you can't revert back."
+  output ""
   output "********************************************************"
   output "Installing Cosmic CMS..."
   output "********************************************************"
@@ -83,9 +84,15 @@ cosmic(){
 
   git clone https://git.krews.org/Raizer/Cosmic.git
 
-  sudo chown -R $USER:www-data /var/www/Cosmic
+  mkdir $DOMAIN
 
-  cd Cosmic
+  mv Cosmic/$DOMAIN/* $DOMAIN
+
+  sudo chown -R $USER:www-data /var/www/$DOMAIN
+
+  rm -rf Cosmic
+
+  cd $DOMAIN
 
   composer install
 
@@ -131,7 +138,7 @@ server {
 
      server_name ${DOMAIN};
 
-     root /var/www/Cosmic/public;
+     root /var/www/$DOMAIN/public;
      index index.php index.html;
 
      add_header Access-Control-Allow-Origin *;
@@ -156,7 +163,7 @@ server {
 
      server_name ${DOMAIN};
 
-     root /var/www/Cosmic/public;
+     root /var/www/$DOMAIN/public;
      index index.php index.html;
 
      add_header Access-Control-Allow-Origin *;
@@ -297,13 +304,13 @@ setup_database(){
   mysql -u root -p -e "FLUSH PRIVILEGES;"
 
   output "Execute database SQL"
-  mysql -u root -p ${MYSQL_DB} < /var/www/Cosmic/cosmic-assets/Database/2.6.sql 
-  mysql -u root -p ${MYSQL_DB} < /var/www/Cosmic/cosmic-assets/Database/rarevalue.sql 
+  mysql -u root -p ${MYSQL_DB} < /var/www/$DOMAIN/cosmic-assets/Database/2.6.sql 
+  mysql -u root -p ${MYSQL_DB} < /var/www/$DOMAIN/cosmic-assets/Database/rarevalue.sql 
 
   echo "Database Created & Configured!"
 
 # Setup .env file
-bash -c 'cat > /var/www/Cosmic/.env' << EOF
+bash -c "cat > /var/www/$DOMAIN/.env" << EOF
 DB_DRIVER=mysql
 DB_HOST=localhost
 DB_NAME=${MYSQL_DB}
@@ -394,6 +401,7 @@ cosmic_summary(){
   output "MySQL Password : $MYSQL_PASSWORD"
   output "Website Domain : $DOMAIN"
   output "********************************************************"
+  output "DIR : /var/www/$DOMAIN"
   output "Thanks for installing Cosmic"
   output "Link to Cosmic github :"
   output "https://git.krews.org/Raizer/Cosmic"
