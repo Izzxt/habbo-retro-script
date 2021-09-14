@@ -119,6 +119,13 @@ setup_nitro(){
   mv dist/* /var/www/$DOMAIN
   rm -rf dist
 
+  # Clone c_images
+  git clone https://github.com/Izzxt/cata-assets.git
+
+  mv cata-assests/c_images /var/www/$DOMAIN
+
+  rm -rf cata-assets
+
   # Clone into default-assets
   git clone https://git.krews.org/nitro/default-assets.git
 
