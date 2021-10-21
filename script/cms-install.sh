@@ -277,6 +277,9 @@ cosmic_dep(){
   RESULT=$?
   rm composer-setup.php
   exit $RESULT
+  
+  # Move composer.phar to /usr/local/bin/
+  sudo mv composer.phar /usr/local/bin/composer
     
   # Install Git
   sudo apt-get -y install git
