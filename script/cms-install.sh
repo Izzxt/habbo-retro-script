@@ -230,7 +230,7 @@ cosmic_dep(){
   apt_update
 
   # Install 16v.NodeJS
-  curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
+  curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
   sudo apt-get install -y nodejs
 
   # Install PHP and its useful modules
@@ -259,11 +259,23 @@ cosmic_dep(){
   sudo apt-get -y install php-mysql
 
   # Install Composer v2
-  php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-  php -r "if (hash_file('sha384', 'composer-setup.php') === '756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-  sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-  php -r "unlink('composer-setup.php');"
 
+  EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
+  php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+  ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
+
+  if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]
+    then
+        >&2 echo 'ERROR: Invalid installer checksum'
+        rm composer-setup.php
+        exit 1
+  fi
+
+  php composer-setup.php --quiet
+  RESULT=$?
+  rm composer-setup.php
+  exit $RESULT
+    
   # Install Git
   sudo apt-get -y install git
 
