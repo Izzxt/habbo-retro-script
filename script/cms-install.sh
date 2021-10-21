@@ -257,6 +257,8 @@ cosmic_dep(){
   sudo apt-get -y install php-pdo
 
   sudo apt-get -y install php-mysql
+  
+  sudo apt-get -y install php-zip
 
   # Install Composer v2
 
