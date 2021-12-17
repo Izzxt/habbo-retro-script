@@ -70,15 +70,18 @@ selection_option(){
 }
 
 cms(){
-  bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/script/cms-install.sh)
+  # bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/script/cms-install.sh)
+  source ./script/cms-install.sh
 }
 
 nitro(){
-  bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/script/nitro-install.sh)
+  # bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/script/nitro-install.sh)
+  source ./script/nitro-install.sh
 }
 
 emulator(){
-  bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/script/emulator-install.sh)
+  # bash <(curl -s https://raw.githubusercontent.com/Izzxt/habbo-retro-script/master/script/emulator-install.sh)
+  source ./script/emulator-install.sh
 }
 
 plugins(){
