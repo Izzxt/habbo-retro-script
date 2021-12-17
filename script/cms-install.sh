@@ -276,7 +276,6 @@ cosmic_dep(){
   php composer-setup.php --quiet
   RESULT=$?
   rm composer-setup.php
-  exit $RESULT
   
   # Move composer.phar to /usr/local/bin/
   sudo mv composer.phar /usr/local/bin/composer
