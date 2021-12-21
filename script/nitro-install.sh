@@ -143,7 +143,7 @@ setup_nitro(){
   mkdir bundled
 
   # Clone into oshawott nitro-assets
-  git clone https://git.krews.org/oshawott/nitro-assets.git
+  git clone https://github.com/sphynxkitten/nitro-assets
 
   # Move all assets to bundled directory
   mv nitro-assets/* bundled
