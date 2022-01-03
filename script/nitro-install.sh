@@ -93,7 +93,7 @@ setup_nitro(){
   fi
 
   # Clone nitro
-  git clone https://git.krews.org/nitro/nitro-client.git --branch dev
+  git clone https://git.krews.org/nitro/nitro-client.git
   
   sudo chown -R $USER:$USER ./nitro-client/
 
