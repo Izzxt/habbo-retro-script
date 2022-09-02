@@ -1,0 +1,20 @@
+[Unit]
+Description=Arcturus Emulator
+[Service]
+User=root
+# The configuration file application.properties should be here:
+
+#change this to your workspace
+WorkingDirectory=/srv/Arcturus
+
+#path to executable.
+#executable is a bash script which calls jar file
+ExecStart=/srv/Arcturus/emulator
+
+SuccessExitStatus=143
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
