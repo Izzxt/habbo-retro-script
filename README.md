@@ -37,7 +37,10 @@ sudo systemctl start arcturus
 # Stop emulator service
 sudo systemctl stop arcturus
 
-# Restsart emulator service
+# Check status emulator service
+sudo systemctl status arcturus
+
+# Restart emulator service
 sudo systemctl restart arcturus
 
 # Check emulator log
