@@ -1,12 +1,10 @@
 #!/bin/bash
 
 cms_config(){
-  if [ "$cms_config_choice" = "1" ]; then
-    if [[ "$cms_config_answer" =~ [Yy] ]]; then
-      sudo sed -i -e "s|https://client.devraizer.nl|https://${NITRO_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
-    else
-      sudo sed -i -e "s|https://client.devraizer.nl|http://${NITRO_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
-    fi
+  if [[ "$cms_config_answer" =~ [Yy] ]]; then
+    sed -i -e "s|https://client.devraizer.nl|https://${NITRO_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
+  else
+    sed -i -e "s|https://client.devraizer.nl|http://${NITRO_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
   fi
 }
 
