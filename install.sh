@@ -1,10 +1,16 @@
 #!/bin/bash
 
+SCRIPT_PATH=$(pwd)
+
+BRANCH='new-script'
+GITHUB_URL="https://raw.githubusercontent.com/Izzxt/habbo-retro-script/$BRANCH"
+
 DB_DATABASE=''
 DB_USERNAME=''
 DB_PASSWORD=''
 CMS_DOMAIN=''
 NITRO_DOMAIN=''
+WS_NITRO_DOMAIN=''
 
 output(){
     echo -e '* '$1'';
@@ -19,6 +25,10 @@ error(){
     echo -e '* \e[31m'$1'\e[0m';
 }
 
+apt_update(){
+  sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y autoremove
+}
+
 install() {
   if [ "$EUID" -ne 0 ]; then
     error "You must run as root to use this script."
@@ -31,6 +41,7 @@ install() {
     exit 1
   fi
 
+  echo "$SCRIPT_PATH/cosmic-assets/Database/2.6.sql"
   output "********************************************************"
   output "Please choose your installation option."
   output "********************************************************"
@@ -67,27 +78,78 @@ selection_option(){
     cms_prompt
     cms_domain_prompt
     web_prompt
-    cms_selection
     database_prompt
+    cms_selection
   elif [ "$option" = "2" ]; then
-    nitro
+    source ./nitro.sh
+    nitro_domain_prompt
+    cms_config
+    nitro_dep
+    nitro_setup
+    nitro_configure_web
+    nitro_plugin
   elif [ "$option" = "3" ]; then
-    emulator
+    source ./arcturus.sh
+    database_prompt
+    apt_update
+    sudo apt-get install mariadb-server -y
+    arcturus_dep
+    setup_database
+    arcturus_setup
   elif [ "$option" = "4" ]; then
-    cms
-    emulator
-    nitro
-    plugins
+    source ./arcturus.sh
+    source ./nitro.sh
+    source ./cosmic.sh
+    cms_prompt
+    cms_domain_prompt
+    web_prompt
+    nitro_domain_prompt
+    database_prompt
+    apt_update
+    cosmic_dep
+    nitro_dep
+    arcturus_dep
+    setup_database
+    arcturus_setup
+    setup_cosmic
+    web_configure
+    setup_cosmic_database
+    cms_config
+    nitro_setup
+    nitro_configure_web
+    nitro_plugin
+
+    # Update emulator settings
+    mysql -u root "-p${DB_PASSWORD}" -e "UPDATE `emulator_settings` SET `value` = '*' WHERE (`key` = 'websockets.whitelist');"
   fi
 }
 
 cms_selection(){
   if [ "$choice" = "1" ]; then
+    apt_update
     cosmic_dep
     setup_cosmic
     web_configure
     setup_database
+    setup_cosmic_database
   fi
+}
+
+setup_database(){
+  output "********************************************************"
+  output "Setting up database..."
+  output "********************************************************"
+  output "Create MySQL user."
+  mysql -u root "-p$DB_PASSWORD" -e "CREATE USER '${DB_USERNAME}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
+
+  output "Create database."
+  mysql -u root "-p$DB_PASSWORD" -e "CREATE DATABASE ${DB_DATABASE};"
+
+  output "Grant privileges."
+  mysql -u root "-p$DB_PASSWORD" -e "GRANT ALL PRIVILEGES ON ${DB_DATABASE}.* TO '${DB_USERNAME}'@'localhost' WITH GRANT OPTION;"
+
+  output "Flush privileges."
+  mysql -u root "-p$DB_PASSWORD" -e "FLUSH PRIVILEGES;"
 }
 
 cms_prompt(){
@@ -143,6 +205,7 @@ web_prompt(){
       output "You have choose to use Nginx web server"
       ;;
     * ) error "Invalid Input"
+      web_prompt
   esac
 
   echo -ne "* Are you using cloudflare? (Y/N) : "
@@ -164,19 +227,26 @@ plugins(){
 
 cms_domain_prompt(){
   echo ''
-  echo -en '*\e[36m Website Domain (cosmic.local) : \e[0m';
+  echo -en '*\e[36m Website Domain (website.com) : \e[0m';
   read -r DOMAIN_INPUT
 
-  [ -z "$DOMAIN_INPUT" ] && CMS_DOMAIN="cosmic.local" || CMS_DOMAIN=$DOMAIN_INPUT 
+  [ -z "$DOMAIN_INPUT" ] && CMS_DOMAIN="website.com" || CMS_DOMAIN=$DOMAIN_INPUT 
 }
 
 
 nitro_domain_prompt(){
   echo ''
-  echo -en '*\e[36m Nitro Domain (nitro.local) : \e[0m';
+  echo -en '*\e[36m Nitro Domain (nitro.website.com) : \e[0m';
   read -r NITRO_DOMAIN_INPUT
 
-  [ -z "$NITRO_DOMAIN_INPUT" ] && NITRO_DOMAIN="nitro.local" || NITRO_DOMAIN=$NITRO_DOMAIN_INPUT 
+  [ -z "$NITRO_DOMAIN_INPUT" ] && NITRO_DOMAIN="nitro.website.com" || NITRO_DOMAIN=$NITRO_DOMAIN_INPUT 
+  echo -en '*\e[36m Nitro Websocket Domain (ws.website.com) : \e[0m';
+  read -r NITRO_WS_DOMAIN_INPUT
+
+  [ -z "$NITRO_WS_DOMAIN_INPUT" ] && WS_NITRO_DOMAIN="ws.website.com" || WS_NITRO_DOMAIN=$NITRO_WS_DOMAIN_INPUT 
+
+  echo -en "* Would you like to use HTTPS? (Y/N) : "
+  read -r cms_config_answer
 }
 
 password_input(){
