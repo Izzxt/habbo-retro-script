@@ -1,8 +1,4 @@
 # used
-apt_update(){
-  sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y autoremove
-}
-
 web_configure(){
   if [ "$webs_choice" = "1" ]; then
     configure_nginx
@@ -35,18 +31,18 @@ setup_cosmic(){
 
   composer install
 
-  bash -c "cat ./nginx/cosmic/.env >> /var/www/$CMS_DOMAIN/.env"
+  curl -o /var/www/$CMS_DOMAIN/.env $GITHUB_URL/nginx/cosmic/.env
 
   sed -i -e "s|DB_NAME=cosmic|DB_NAME=${DB_DATABASE}|g" /var/www/$CMS_DOMAIN/.env
 
-  sed -i -e "s|DB_USER=raizer|DB_NAME=${DB_USERNAME}|g" /var/www/$CMS_DOMAIN/.env
+  sed -i -e "s|DB_USER=raizer|DB_USER=${DB_USERNAME}|g" /var/www/$CMS_DOMAIN/.env
 
-  sed -i -e "s|DB_PASS=meteor123|DB_NAME=${DB_PASSWORD}|g" /var/www/$CMS_DOMAIN/.env
+  sed -i -e "s|DB_PASS=meteor123|DB_PASS=${DB_PASSWORD}|g" /var/www/$CMS_DOMAIN/.env
 
 }
 
 # used
-register_hosts(){
+register_cms_hosts(){
 bash -c "cat >> /etc/hosts" << EOF
 127.0.0.1         $CMS_DOMAIN
 EOF
@@ -63,10 +59,10 @@ configure_nginx(){
   sudo systemctl start nginx
 
   if [[ "$answer" =~ [Yy] ]]; then
-    bash -c "cat ./nginx/cosmic/nginx.conf >> /etc/nginx/sites-available/$CMS_DOMAIN"
+    curl -o /etc/nginx/sites-available/$CMS_DOMAIN $GITHUB_URL/nginx/cosmic/nginx.conf
     cloudflare
   else
-    bash -c "cat ./nginx/cosmic/nginx.conf >> /etc/nginx/sites-available/$CMS_DOMAIN"
+    curl -o /etc/nginx/sites-available/$CMS_DOMAIN $GITHUB_URL/nginx/cosmic/nginx.conf
   fi
 
   sed -i -e "s|DOMAIN|$CMS_DOMAIN|g" /etc/nginx/sites-available/$CMS_DOMAIN
@@ -74,8 +70,10 @@ configure_nginx(){
   # Create link to sites-enabled
   sudo ln -s /etc/nginx/sites-available/$CMS_DOMAIN /etc/nginx/sites-enabled/
 
+  sudo rm /etc/nginx/sites-enabled/default
+
   # Register hosts
-  register_hosts
+  register_cms_hosts
 
   # Restart Nginx service
   sudo systemctl restart nginx
@@ -89,6 +87,7 @@ cosmic_dep(){
   apt_update
 
   if ! [ -x "$(command -v nginx)" ]; then
+    sudo add-apt-repository ppa:ondrej/nginx -y
     sudo apt install -y nginx
   fi
 
@@ -97,67 +96,32 @@ cosmic_dep(){
 
   sudo add-apt-repository ppa:ondrej/php -y
 
-  sudo add-apt-repository ppa:ondrej/nginx -y
-
   sudo apt update -y
 
-  sudo apt-get install -y php
-  sudo apt-get install -y php-common 
-  sudo apt-get install -y php-curl 
-  sudo apt-get install -y php-mbstring 
-  sudo apt-get install -y php-gd 
-  sudo apt-get install -y php-fpm 
-  sudo apt-get install -y php-mysql 
-  sudo apt-get install -y php-zip 
-  sudo apt-get install -y php-pdo 
-  sudo apt-get install -y git 
-  sudo apt-get install -y mariadb-server
+  sudo apt-get install php8.1 php8.1-common \
+    php8.1-curl php8.1-mysql php8.1-opcache \
+    php8.1-imap php8.1-fpm mariadb-server -y
+
+  sudo apt install php8.1-xml php8.1-xmlrpc \
+    php8.1-gd php8.1-imagick php8.1-cli \
+    php8.1-dev php8.1-imap php8.1-mbstring \
+    php8.1-soap php8.1-zip php8.1-intl unzip -y
 
   # Install Composer v2
 
-  EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
-  php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-  ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
-
-  if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]
-    then
-        >&2 echo 'ERROR: Invalid installer checksum'
-        rm composer-setup.php
-        exit 1
-  fi
-
-  php composer-setup.php --quiet
-  RESULT=$?
-  rm composer-setup.php
-  
-  # Move composer.phar to /usr/local/bin/
-  sudo mv composer.phar /usr/local/bin/composer
+  curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
+  sudo php /tmp/composer-setup.php --install-dir=/usr/bin --filename=composer
 
   sudo systemctl enable mariadb
   sudo systemctl start mariadb
 
-  sudo systemctl stop apache2
+  sudo apt purge apache2 -y
 }
 
-setup_database(){
-  output "********************************************************"
-  output "Setting up Cosmic database..."
-  output "********************************************************"
-  output "Create MySQL user."
-  mysql -u root "-p$DB_PASSWORD" -e "CREATE USER '${DB_USERNAME}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
-
-  output "Create database."
-  mysql -u root "-p$DB_PASSWORD" -e "CREATE DATABASE ${DB_DATABASE};"
-
-  output "Grant privileges."
-  mysql -u root "-p$DB_PASSWORD" -e "GRANT ALL PRIVILEGES ON ${DB_DATABASE}.* TO '${DB_USERNAME}'@'localhost' WITH GRANT OPTION;"
-
-  output "Flush privileges."
-  mysql -u root "-p$DB_PASSWORD" -e "FLUSH PRIVILEGES;"
-
+setup_cosmic_database(){
   output "Execute database SQL"
-  mysql -u root "-p$DB_PASSWORD" ${DB_DATABASE} < cosmic-assets/Database/2.6.sql 
-  mysql -u root "-p$DB_PASSWORD" ${DB_DATABASE} < cosmic-assets/Database/rarevalue.sql 
+  mysql -u root "-p$DB_PASSWORD" ${DB_DATABASE} < $SCRIPT_PATH/cosmic-assets/Database/2.6.sql 
+  mysql -u root "-p$DB_PASSWORD" ${DB_DATABASE} < $SCRIPT_PATH/cosmic-assets/Database/upload_fix_and_mailservice.sql 
 
   echo "Database Created & Configured!"
 }
@@ -171,7 +135,7 @@ cloudflare(){
   # Create file
   touch /opt/scripts/cloudflare-ip-whitelist-sync.sh
 
-  bash -c "cat ./cloudflare/cloudflare-ip-whitelist-sync.sh > /opt/scripts/cloudflare-ip-whitelist-sync.sh"
+  curl -o /opt/scripts/cloudflare-ip-whitelist-sync.sh $GITHUB_URL/cloudflare/cloudflare-ip-whitelist-sync.sh
 
   # Set permissions to execute scripts
   sudo chmod +x /opt/scripts/cloudflare-ip-whitelist-sync.sh
@@ -183,7 +147,7 @@ cloudflare(){
   sed -i '/\/etc\/nginx\/sites-enabled\/\*/a include /etc/nginx/cloudflare;' /etc/nginx/nginx.conf
 
   # Create cron job
-  sudo bash -c "cat ./crontab/crontab >> /etc/crontab"
+  curl -o /etc/crontab $GITHUB_URL/crontab/crontab
 
   sudo systemctl restart nginx
 }
