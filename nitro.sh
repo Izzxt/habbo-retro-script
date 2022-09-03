@@ -3,9 +3,9 @@
 cms_config(){
   if [ "$cms_config_choice" = "1" ]; then
     if [[ "$cms_config_answer" =~ [Yy] ]]; then
-      sudo sed -i -e "s|https://comsic.devraizer.nl|https://${CMS_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
+      sudo sed -i -e "s|https://client.devraizer.nl|https://${NITRO_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
     else
-      sudo sed -i -e "s|https://cosmic.devraizer.nl|http://${CMS_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
+      sudo sed -i -e "s|https://client.devraizer.nl|http://${NITRO_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
     fi
   fi
 }
