@@ -111,25 +111,28 @@ selection_option(){
     arcturus_dep
     setup_database
     arcturus_setup
+    cd $SCRIPT_PATH
     setup_cosmic
+    cd $SCRIPT_PATH
 
-    if [ "$cms_config_choice" = "1" ]; then
-      if [[ "$cms_config_answer" =~ [Yy] ]]; then
-        sudo sed -i -e "s|https://comsic.devraizer.nl|https://${CMS_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
-      else
-        sudo sed -i -e "s|https://cosmic.devraizer.nl|http://${CMS_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
-      fi
+    if [[ "$cms_config_answer" =~ [Yy] ]]; then
+      sed -i -e "s|https://comsic.devraizer.nl|https://${CMS_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
+    else
+      sed -i -e "s|https://cosmic.devraizer.nl|http://${CMS_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
     fi
 
     web_configure
     setup_cosmic_database
     cms_config
+    cd $SCRIPT_PATH
     nitro_setup
     nitro_configure_web
     nitro_plugin
 
+    sudo systemctl stop arcturus
     # Update emulator settings
-    mysql -u root "-p${DB_PASSWORD}" -e "UPDATE `emulator_settings` SET `value` = '*' WHERE (`key` = 'websockets.whitelist');"
+    mysql -u root "-p${DB_PASSWORD}" ${DB_DATABASE} -e "UPDATE emulator_settings SET \`value\` = '*' WHERE \`key\` = 'websockets.whitelist';"
+    sudo systemctl start arcturus
   fi
 }
 
