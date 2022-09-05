@@ -84,7 +84,7 @@ cd /srv/Arcturus
 https://git.krews.org/nitro/nitro-react
 
 ### Oshawott (for assets)
-https://git.krews.org/oshawott/nitro-assets
+https://github.com/sphynxkitten/nitro-assets
 
 ### Arcturus Emulator
 https://git.krews.org/morningstar/Arcturus-Community
