@@ -102,8 +102,8 @@ selection_option(){
     source ./cosmic.sh
     cms_prompt
     cms_domain_prompt
-    web_prompt
     nitro_domain_prompt
+    web_prompt
     database_prompt
     apt_update
     cosmic_dep
