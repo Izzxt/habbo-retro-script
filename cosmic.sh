@@ -121,7 +121,7 @@ cosmic_dep(){
 setup_cosmic_database(){
   output "Execute database SQL"
   mysql -u root "-p$DB_PASSWORD" ${DB_DATABASE} < $SCRIPT_PATH/cosmic-assets/Database/2.6.sql 
-  mysql -u root "-p$DB_PASSWORD" ${DB_DATABASE} < $SCRIPT_PATH/cosmic-assets/Database/upload_fix_and_mailservice.sql 
+  mysql -u root "-p$DB_PASSWORD" ${DB_DATABASE} < $SCRIPT_PATH/cosmic-assets/Database/themeswitcher.sql 
 
   echo "Database Created & Configured!"
 }

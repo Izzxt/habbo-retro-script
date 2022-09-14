@@ -116,9 +116,9 @@ selection_option(){
     cd $SCRIPT_PATH
 
     if [[ "$cms_config_answer" =~ [Yy] ]]; then
-      sed -i -e "s|https://comsic.devraizer.nl|https://${CMS_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
+      sed -i -e "s|https://client.habbo.ng|https://${CMS_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
     else
-      sed -i -e "s|https://cosmic.devraizer.nl|http://${CMS_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
+      sed -i -e "s|https://client.habbo.ng|http://${CMS_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
     fi
 
     web_configure
