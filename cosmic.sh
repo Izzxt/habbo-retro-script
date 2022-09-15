@@ -114,8 +114,6 @@ cosmic_dep(){
 
   sudo systemctl enable mariadb
   sudo systemctl start mariadb
-
-  sudo apt purge apache2 -y
 }
 
 setup_cosmic_database(){
