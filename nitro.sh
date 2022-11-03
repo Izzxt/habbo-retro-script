@@ -2,9 +2,9 @@
 
 cms_config(){
   if [[ "$cms_config_answer" =~ [Yy] ]]; then
-    sed -i -e "s|https://client.devraizer.nl|https://${NITRO_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
+    sed -i -e "s|https://client.habbo.ng|https://${NITRO_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
   else
-    sed -i -e "s|https://client.devraizer.nl|http://${NITRO_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
+    sed -i -e "s|https://client.habbo.ng|http://${NITRO_DOMAIN}|g" /var/www/$CMS_DOMAIN/src/App/Config.php
   fi
 }
 
